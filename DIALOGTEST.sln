@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DIALOGTEST", "DIALOGTEST\DIALOGTEST.vcxproj", "{62400712-5268-4F2A-AD9A-21C0C2E42287}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62400712-5268-4F2A-AD9A-21C0C2E42287}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62400712-5268-4F2A-AD9A-21C0C2E42287}.Debug|Win32.Build.0 = Debug|Win32
+		{62400712-5268-4F2A-AD9A-21C0C2E42287}.Release|Win32.ActiveCfg = Release|Win32
+		{62400712-5268-4F2A-AD9A-21C0C2E42287}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
