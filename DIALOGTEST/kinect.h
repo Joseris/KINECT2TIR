@@ -142,10 +142,13 @@ struct P
 	char iX;
 	char iY;
 	char iZ;
-	char r1;
-	char r2;
-	char r3;
-	float res3;
+	unsigned char Output;
+	unsigned char Port1;
+	unsigned char Port2;
+	unsigned char IP1;
+	unsigned char IP2;
+	unsigned char IP3;
+	unsigned char IP4;
 	float res4;
 	float res5;
 	float res6;

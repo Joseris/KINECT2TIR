@@ -1,23 +1,10 @@
+#pragma once
+
 #include "windows.h"
+#include "common.h"
 
 #define	NP_AXIS_MIN				-16383
 #define	NP_AXIS_MAX				16383
-struct POSITION
-{
-	double x;
-	double y;
-	double z; 
-	double yaw;
-	double pitch;
-	double roll;
-};
-struct T6DOF
-{
-	POSITION position;
-};
-
-
-
 
 typedef struct tagTrackIRData
 {
