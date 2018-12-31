@@ -50,7 +50,7 @@ DWORD lastupdate = 0;
 bool kDown = false;
 bool bOutRunning = true;
 bool bRunning = true;
-
+bool bPreview = true;
 
 char	*pStr, strPath[255], strTemp[255];
 void LoadProfile();
@@ -335,6 +335,14 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						break;
 					}
+				case IDC_CHECK_PREVIEW:
+					{
+						bPreview = SendMessage(GetDlgItem(hDlg, IDC_CHECK_PREVIEW), BM_GETCHECK, 0, 0);
+						if (bPreview)
+						{
+							StartPreviewLoop();
+						}
+					}
 			}
 			break;
 
@@ -432,7 +440,7 @@ DWORD WINAPI OutputLoop( LPVOID lpParam ) //thread: waits for window
 
 DWORD WINAPI PreviewLoop( LPVOID lpParam )
 {
-	while(bRunning)
+	while(bRunning && bPreview)
 	{
 		//gui stuff
 		//Render();
@@ -635,6 +643,8 @@ int WINAPI _tWinMain(HINSTANCE hInst, HINSTANCE h0, LPTSTR lpCmdLine, int nCmdSh
 
   SendMessage(GetDlgItem(hDlg, IDC_IPADDRESS), IPM_SETADDRESS, 0, MAKEIPADDRESS(127, 0, 0, 1));
   SetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), _T("5550"));
+
+  SendMessage(GetDlgItem(hDlg, IDC_CHECK_PREVIEW), BM_SETCHECK, 1, 0);
 
   initialize();
 
