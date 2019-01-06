@@ -46,12 +46,17 @@ F12 - Recenter
 
 
 ## Version History
+- What's new in v2.1b on 12/31/18?
+* Added option to direct raw head movement data to UDP
+..* can be used with OpenTrack or FaceTrackNoIR as input
+* Added option to disable visual preview to improve performance (just barely)
+
 - What's new in v2.0b on 9/1/14?
- *Converted to KinectSDK v1
- *Fixed some smoothing and rendering bugs
+..*Converted to KinectSDK v1
+..*Fixed some smoothing and rendering bugs
 
 - What's new in v1.0 on 9/14/12?
- *First version
+..*First version
 
 ## Known Bugs
 * profile settings are incomplete
