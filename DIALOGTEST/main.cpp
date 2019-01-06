@@ -124,6 +124,8 @@ void UpdateCurrentProfile()
 		CurrentProfile.Port1 = LOBYTE(iPort);
 		CurrentProfile.Port2 = HIBYTE(iPort);
 	}
+
+	CurrentProfile.OutputRaw = SendMessage(GetDlgItem(hDlg, IDC_CHECK_OUTPUT_RAW), BM_GETCHECK, 0, 0);
 }
 
 void SaveProfile()
@@ -214,6 +216,8 @@ void LoadProfile()
 		{
 			SetWindowText(GetDlgItem(hDlg, IDC_EDIT_PORT), std::to_string(MAKEWORD(CurrentProfile.Port1, CurrentProfile.Port2)).c_str());
 		}
+
+		SendMessage(GetDlgItem(hDlg, IDC_CHECK_OUTPUT_RAW), BM_SETCHECK, CurrentProfile.OutputRaw, 0);
 		//Beep(100,100);
 
 		////save profile buffer to file
@@ -335,6 +339,11 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						}
 						break;
 					}
+				case IDC_CHECK_OUTPUT_RAW:
+					{
+						UpdateCurrentProfile();
+						break;
+					}
 				case IDC_CHECK_PREVIEW:
 					{
 						bPreview = SendMessage(GetDlgItem(hDlg, IDC_CHECK_PREVIEW), BM_GETCHECK, 0, 0);
@@ -342,6 +351,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						{
 							StartPreviewLoop();
 						}
+						break;
 					}
 			}
 			break;
@@ -384,43 +394,40 @@ DWORD WINAPI OutputLoop( LPVOID lpParam ) //thread: waits for window
 
 	while(bOutRunning){
 
-		int curOutput = SendMessage(GetDlgItem(hDlg, IDC_COMBO_OUTPUT), CB_GETCURSEL, 0, 0);
-		if (curOutput == 0)
+		if (CurrentProfile.Output == 0 || CurrentProfile.OutputRaw)
 		{
-			amult = 0.5*(CurrentProfile.AngleX*0.1+1.0);
-			tmult = 0.1*(CurrentProfile.TransX*0.1+1.0);
+			amult = 0.5*(CurrentProfile.AngleX*0.1 + 1.0);
+			tmult = 0.1*(CurrentProfile.TransX*0.1 + 1.0);
 
 			//output to game
-			if(CurrentProfile.iPitch)
-				t6out.position.pitch =-(KDATACURRENT.fPitch-KDATACENTER.fPitch)*amult*10.0;
+			if (CurrentProfile.iPitch)
+				t6out.position.pitch = -(KDATACURRENT.fPitch - KDATACENTER.fPitch)*amult*10.0;
 			else
-				t6out.position.pitch =(KDATACURRENT.fPitch-KDATACENTER.fPitch)*amult*10.0;
+				t6out.position.pitch = (KDATACURRENT.fPitch - KDATACENTER.fPitch)*amult*10.0;
 
 			t6out.position.roll = 0;//(KDATACURRENT.fRoll-KDATACENTER.fRoll)*amult;
-		
-			if(CurrentProfile.iYaw)
-				t6out.position.yaw= (KDATACURRENT.fYaw-KDATACENTER.fYaw)*amult*10.0;
-			else
-				t6out.position.yaw= -(KDATACURRENT.fYaw-KDATACENTER.fYaw)*amult*10.0;
 
-			if(CurrentProfile.iX)
-				t6out.position.x = -(KDATACURRENT.fX-KDATACENTER.fX)*tmult*0.8;//KDATASMOOTH.fX*tmult;
+			if (CurrentProfile.iYaw)
+				t6out.position.yaw = (KDATACURRENT.fYaw - KDATACENTER.fYaw)*amult*10.0;
 			else
-				t6out.position.x = (KDATACURRENT.fX-KDATACENTER.fX)*tmult*0.8;//KDATASMOOTH.fX*tmult;
+				t6out.position.yaw = -(KDATACURRENT.fYaw - KDATACENTER.fYaw)*amult*10.0;
 
-			if(CurrentProfile.iY)
-				t6out.position.y = (KDATACURRENT.fY-KDATACENTER.fY)*tmult*0.8;//KDATASMOOTH.fY*tmult;
+			if (CurrentProfile.iX)
+				t6out.position.x = -(KDATACURRENT.fX - KDATACENTER.fX)*tmult*0.8;//KDATASMOOTH.fX*tmult;
 			else
-				t6out.position.y = -(KDATACURRENT.fY-KDATACENTER.fY)*tmult*0.8;//KDATASMOOTH.fY*tmult;
+				t6out.position.x = (KDATACURRENT.fX - KDATACENTER.fX)*tmult*0.8;//KDATASMOOTH.fX*tmult;
 
-			if(CurrentProfile.iZ)
-				t6out.position.z = -(KDATACURRENT.fZ-KDATACENTER.fZ)*tmult*0.8;//KDATASMOOTH.fZ*tmult;
+			if (CurrentProfile.iY)
+				t6out.position.y = (KDATACURRENT.fY - KDATACENTER.fY)*tmult*0.8;//KDATASMOOTH.fY*tmult;
 			else
-				t6out.position.z = (KDATACURRENT.fZ-KDATACENTER.fZ)*tmult*0.8;//KDATASMOOTH.fZ*tmult;
+				t6out.position.y = -(KDATACURRENT.fY - KDATACENTER.fY)*tmult*0.8;//KDATASMOOTH.fY*tmult;
 
-			sendHeadposeToGame(&t6out);
+			if (CurrentProfile.iZ)
+				t6out.position.z = -(KDATACURRENT.fZ - KDATACENTER.fZ)*tmult*0.8;//KDATASMOOTH.fZ*tmult;
+			else
+				t6out.position.z = (KDATACURRENT.fZ - KDATACENTER.fZ)*tmult*0.8;//KDATASMOOTH.fZ*tmult;
 		}
-		else if (curOutput == 1)
+		else
 		{
 			t6out.position.pitch = KDATA.fPitch;
 			t6out.position.roll = KDATA.fRoll;
@@ -428,7 +435,14 @@ DWORD WINAPI OutputLoop( LPVOID lpParam ) //thread: waits for window
 			t6out.position.x = KDATA.fX;
 			t6out.position.y = KDATA.fY;
 			t6out.position.z = KDATA.fZ;
+		}
 
+		if (CurrentProfile.Output == 0)
+		{
+			sendHeadposeToGame(&t6out);
+		}
+		else if (CurrentProfile.Output == 1)
+		{
 			SendUDP(&t6out);
 		}
 		//sprintf(text, "LERP: %.4f \r\nSMOOTH: %.4f \r\nIN: %.4f %.4f %.4f \r\nOUT: %.4f %.4f %.4f\r\nPHYS: %.4f DIFF: %.4f", (float)HScroll1,(float)HScroll2,KDATA.fPitch,KDATA.fRoll,KDATA.fYaw,KDATASMOOTH.fPitch,KDATASMOOTH.fRoll,KDATASMOOTH.fYaw,KDATACURRENT.fYaw);

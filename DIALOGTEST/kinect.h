@@ -149,7 +149,10 @@ struct P
 	unsigned char IP2;
 	unsigned char IP3;
 	unsigned char IP4;
-	float res4;
+	unsigned char OutputRaw;
+	char res1;
+	char res2;
+	char res3;
 	float res5;
 	float res6;
 	float res7;
